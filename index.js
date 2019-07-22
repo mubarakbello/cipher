@@ -66,18 +66,36 @@ Cipher.prototype.getNextRandom = function() {
 Cipher.prototype.encrypt = function() {
   if (!this._map) this.initialize();
   this.cipher_text1 = String.fromCharCode(...Array.from(this.text).map(char => this._map[char.charCodeAt(0)]));
-  this.columnTransformation(this.cipher_text1);
+  let cipher = this.columnTransformation(this.cipher_text1);
+  cipher = this.columnTransformation(cipher);
+  console.log(cipher);
+}
+
+const chunkString = (string = "", size = 5) => {
+
+  // Pad string up to make it equally divisible
+  const padsize = size - (string.length % size);
+  string += Array(padsize + 1).join(' ');
+
+  // Divide string into chunks now
+  const numChunks = Math.ceil(string.length / size);
+  const chunks = new Array(numChunks);
+  for (let i=0, o=0; i < numChunks; i++, o+=size) {
+    chunks[i] = string.substr(o, size);
+  }
+
+  return chunks;
 }
 
 Cipher.prototype.columnTransformation = function(text = "") {
-  const str_array = text.match(new RegExp(`.{1,${this.key.length}}`, 'g'));
-  // console.table(str_array);
+  const str_array = chunkString(text, this.key.length);
   let new_str = [];
-  const new_array = str_array.map((each_array, ind) => {
+  const new_array = str_array.map((each_array, index) => {
     let v = this.subkey2.map(key => each_array[key]);
+    v.forEach((char, ind) => new_str[index + (this.key.length * ind)] = char);
     return v;
   });
-  console.table(new_array);
+  return new_str.join('');
 }
 
 cipher = new Cipher('enemy attacks tonight', "qwert");
