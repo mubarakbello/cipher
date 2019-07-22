@@ -71,10 +71,17 @@ Cipher.prototype.encrypt = function() {
   console.log(cipher);
 }
 
+Cipher.prototype.decrypt = function(text) {
+  let decipher = this.inverseColumnTransformation(text);
+  decipher = this.inverseColumnTransformation(decipher);
+  const deciphered_text = String.fromCharCode(...Array.from(decipher).map(char => this._inverse_map[char.charCodeAt(0)]));
+  console.log(deciphered_text);
+}
+
 const chunkString = (string = "", size = 5) => {
 
   // Pad string up to make it equally divisible
-  const padsize = size - (string.length % size);
+  const padsize = (size - (string.length % size)) % size;
   string += Array(padsize + 1).join(' ');
 
   // Divide string into chunks now
@@ -82,6 +89,26 @@ const chunkString = (string = "", size = 5) => {
   const chunks = new Array(numChunks);
   for (let i=0, o=0; i < numChunks; i++, o+=size) {
     chunks[i] = string.substr(o, size);
+  }
+
+  return chunks;
+}
+
+const inverseChunkString = (string = "", size = 5) => {
+
+  // Pad string up to make it equally divisible
+  const padsize = (size - (string.length % size)) % size;
+  string += Array(padsize + 1).join(' ');
+
+  // Reverse chunk string now
+  const chunks = []
+  const chunk_size = string.length / size;
+  for (let i = 0; i < chunk_size; i++) {
+    const arr_chunk = []
+    for (let j = 0; j < size; j++) {
+      arr_chunk.push(string[i + size * j])
+    }
+    chunks.push(arr_chunk.join(''));
   }
 
   return chunks;
@@ -97,5 +124,17 @@ Cipher.prototype.columnTransformation = function(text = "") {
   return new_str.join('');
 }
 
+Cipher.prototype.inverseColumnTransformation = function(text = "") {
+  const str_array = inverseChunkString(text, this.key.length);
+  let new_str = [];
+  str_array.forEach((each_array, index) => {
+    let v = []
+    this.subkey2.forEach((key, ind) => v[key] = each_array[ind]);
+    v.forEach((char, ind) => new_str[ind + (this.key.length * index)] = char);
+  });
+  return new_str.join('');
+}
+
 cipher = new Cipher('enemy attacks tonight', "qwert");
 cipher.encrypt();
+cipher.decrypt('LM^ve   o oBB oSk^FF oOT]');
