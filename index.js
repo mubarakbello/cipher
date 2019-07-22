@@ -90,10 +90,9 @@ const chunkString = (string = "", size = 5) => {
 Cipher.prototype.columnTransformation = function(text = "") {
   const str_array = chunkString(text, this.key.length);
   let new_str = [];
-  const new_array = str_array.map((each_array, index) => {
+  str_array.forEach((each_array, index) => {
     let v = this.subkey2.map(key => each_array[key]);
     v.forEach((char, ind) => new_str[index + (this.key.length * ind)] = char);
-    return v;
   });
   return new_str.join('');
 }
