@@ -1,6 +1,6 @@
 # Cipher
 
-An implementation of Caesar cipher and transformation cipher.
+An implementation of Caesar cipher and transposition cipher.
 The algorithm is deduced from the following source:
 [Enhancing the Security of Caesar Cipher Substitution
 Method using a Randomized Approach for more Secure
